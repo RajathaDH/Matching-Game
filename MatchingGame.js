@@ -24,94 +24,71 @@ class MatchingGame {
     }
 
     checkMatches() {
-        const rowMatches = this.getRowMatches();
-        const colMatches = this.getColMatches();
-    
-        return { rowMatches, colMatches };
-    }
-
-    getRowMatches() {
         const rowMatches = [];
+        const colMatches = [];
     
         rowLoop: for (let r = 0; r < this.BOARD_SIZE; r++) {
             const row = this.gameBoard[r];
     
-            let matchEnd = 0;
+            let colMatchEnd = 0;
+            let rowMatchEnd = 0;
     
             colLoop: for (let c = 0; c < this.BOARD_SIZE - 1; c++) {
                 // check if current column was already checked by previous matching
                 // skip until last column matched if found
                 // this will avoid matching smaller numbers matches if higher number match was found
-                if (c < matchEnd) {
-                    continue;
+                if (!(c < colMatchEnd)) {
+                    const colMatchStart = c;
+                    let colMatchCount = 1;
+        
+                    // iterate through each column in row until no match is found
+                    matchCountLoop: while (row[colMatchStart] == row[colMatchStart + colMatchCount]) {
+                        colMatchCount++;
+                    }
+        
+                    // subtract 1 to get index of match end
+                    colMatchEnd = colMatchStart + colMatchCount - 1;
+        
+                    if (colMatchCount >= this.MIN_MATCH_COUNT) {
+                        const matchDetails = {
+                            row: r,
+                            colStart: colMatchStart,
+                            colEnd: colMatchEnd,
+                            colMatchCount
+                        };
+                        rowMatches.push(matchDetails);
+                    }
                 }
     
-                const matchStart = c;
-                let matchCount = 1;
-    
-                // iterate through 
-                matchCountLoop: while (row[matchStart] == row[matchStart + matchCount]) {
-                    matchCount++;
-                }
-    
-                // subtract 1 to get index of match end
-                matchEnd = matchStart + matchCount - 1;
-    
-                if (matchCount >= this.MIN_MATCH_COUNT) {
-                    const matchDetails = {
-                        row: r,
-                        colStart: matchStart,
-                        colEnd: matchEnd,
-                        matchCount
-                    };
-                    rowMatches.push(matchDetails);
-                }
-            }
-        }
-    
-        return rowMatches;
-    }
-
-    getColMatches() {
-        const colMatches = [];
-
-        rowLoop: for (let r = 0; r < this.BOARD_SIZE; r++) {
-            //const row = this.gameBoard[r];
-    
-            let matchEnd = 0;
-    
-            colLoop: for (let c = 0; c < this.BOARD_SIZE - 1; c++) {
                 // check if current column was already checked by previous matching
                 // skip until last column matched if found
                 // this will avoid matching smaller numbers matches if higher number match was found
-                if (c < matchEnd) {
-                    continue;
-                }
-    
-                const matchStart = c;
-                let matchCount = 1;
-    
-                // iterate through 
-                matchCountLoop: while ((matchStart + matchCount) < this.BOARD_SIZE && this.gameBoard[matchStart][r] == this.gameBoard[matchStart + matchCount][r]) {
-                    matchCount++;
-                }
-    
-                // subtract 1 to get index of match end
-                matchEnd = matchStart + matchCount - 1;
-    
-                if (matchCount >= 2) {
-                    const matchDetails = {
-                        col: r,
-                        rowStart: matchStart,
-                        rowEnd: matchEnd,
-                        matchCount
-                    };
-                    colMatches.push(matchDetails);
+                if (!(c < rowMatchEnd)) {
+                    const rowMatchStart = c;
+                    let rowMatchCount = 1;
+        
+                    // iterate through each row in column until no match is found
+                    maatchCountLoop: while ((rowMatchStart + rowMatchCount) < this.BOARD_SIZE && this.gameBoard[rowMatchStart][r] == this.gameBoard[rowMatchStart + rowMatchCount][r]) {
+                        rowMatchCount++;
+                    }
+        
+                    // subtract 1 to get index of match end
+                    rowMatchEnd = rowMatchStart + rowMatchCount - 1;
+        
+                    if (rowMatchCount >= this.MIN_MATCH_COUNT) {
+                        const matchDetails = {
+                            col: r,
+                            rowStart: rowMatchStart,
+                            rowEnd: rowMatchEnd,
+                            rowMatchCount
+                        };
+                        colMatches.push(matchDetails);
+                    }
                 }
             }
         }
-
-        return colMatches;
+    
+        return { rowMatches, colMatches };
     }
 
     clearMatches({ rowMatches }) {
