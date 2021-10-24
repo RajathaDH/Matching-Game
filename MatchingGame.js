@@ -38,7 +38,7 @@ class MatchingGame {
     
             let matchEnd = 0;
     
-            colLoop: for (let c = 0; c < this.BOARD_SIZE; c++) {
+            colLoop: for (let c = 0; c < this.BOARD_SIZE - 1; c++) {
                 // check if current column was already checked by previous matching
                 // skip until last column matched if found
                 // this will avoid matching smaller numbers matches if higher number match was found
@@ -74,6 +74,42 @@ class MatchingGame {
 
     getColMatches() {
         const colMatches = [];
+
+        rowLoop: for (let r = 0; r < this.BOARD_SIZE; r++) {
+            //const row = this.gameBoard[r];
+    
+            let matchEnd = 0;
+    
+            colLoop: for (let c = 0; c < this.BOARD_SIZE - 1; c++) {
+                // check if current column was already checked by previous matching
+                // skip until last column matched if found
+                // this will avoid matching smaller numbers matches if higher number match was found
+                if (c < matchEnd) {
+                    continue;
+                }
+    
+                const matchStart = c;
+                let matchCount = 1;
+    
+                // iterate through 
+                matchCountLoop: while ((matchStart + matchCount) < this.BOARD_SIZE && this.gameBoard[matchStart][r] == this.gameBoard[matchStart + matchCount][r]) {
+                    matchCount++;
+                }
+    
+                // subtract 1 to get index of match end
+                matchEnd = matchStart + matchCount - 1;
+    
+                if (matchCount >= 2) {
+                    const matchDetails = {
+                        col: r,
+                        rowStart: matchStart,
+                        rowEnd: matchEnd,
+                        matchCount
+                    };
+                    colMatches.push(matchDetails);
+                }
+            }
+        }
 
         return colMatches;
     }

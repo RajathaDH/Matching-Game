@@ -47,7 +47,7 @@ function checkMatches() {
     console.log(rowMatches);
     console.log(colMatches);
 
-    gameState.matchingGame.clearMatches({ rowMatches });
+    //gameState.matchingGame.clearMatches({ rowMatches });
 
     clearMatches({ rowMatches });
 }
